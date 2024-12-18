@@ -207,11 +207,11 @@ static void on_eis_http_recv(
         goto done;
     }
 
-    if (contentSize < EIS_RESP_SIZE_MIN || contentSize > EIS_RESP_SIZE_MAX)
-    {
-        workloadCtx->status = EISErr_RecvRespOutOfLimitsErr;
-        goto done;
-    }
+    // if (contentSize < EIS_RESP_SIZE_MIN || contentSize > EIS_RESP_SIZE_MAX)
+    // {
+    //     workloadCtx->status = EISErr_RecvRespOutOfLimitsErr;
+    //     goto done;
+    // }
 
     const char* contentType = HTTPHeaders_FindHeaderValue(responseHeaders, "content-type");
 
@@ -392,11 +392,11 @@ EISErr SendEISRequest(
         goto done;
     }
 
-    if (responseLen > EIS_RESP_SIZE_MAX || responseLen < EIS_RESP_SIZE_MIN)
-    {
-        result = EISErr_RecvRespOutOfLimitsErr;
-        goto done;
-    }
+    // if (responseLen > EIS_RESP_SIZE_MAX || responseLen < EIS_RESP_SIZE_MIN)
+    // {
+    //     result = EISErr_RecvRespOutOfLimitsErr;
+    //     goto done;
+    // }
 
     response = (char*)malloc(responseLen + 1);
 

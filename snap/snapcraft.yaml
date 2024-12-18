@@ -182,6 +182,12 @@ plugs:
     content: do-port-numbers
     target: $SNAP_DATA/do-port-numbers
 
+  # Add the new plug for aziot-keys-openssl-engine
+  aziot-keys-openssl-engine:
+    interface: content
+    content: aziot-keys-openssl-engine
+    target: $SNAP/lib/engines-1.1
+
   do-configs:
     interface: content
     content: do-configs
@@ -248,3 +254,4 @@ layout:
 # aziot sockets
   /var/sockets/aziot:
     symlink: $SNAP_DATA/shared/sockets/aziot
+
