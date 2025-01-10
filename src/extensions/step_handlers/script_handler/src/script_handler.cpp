@@ -200,6 +200,22 @@ ADUC_Result ScriptHandlerImpl::Download(const tagADUC_WorkflowData* workflowData
         goto done;
     }
 
+    // After downloading the script file, ensure it's executable
+    const char* scriptFileName = workflow_peek_update_manifest_handler_properties_string(workflowHandle, "scriptFileName");
+    if (!IsNullOrEmpty(scriptFileName))
+    {
+        std::stringstream scriptPath;
+        scriptPath << workFolder << "/" << scriptFileName;
+        
+        // Set execute permissions on the script
+        result = EnsureScriptExecutable(scriptPath.str());
+        if (IsAducResultCodeFailure(result.ResultCode))
+        {
+            Log_Error("Failed to set execute permissions on script file");
+            goto done;
+        }
+    }
+
     // Determine whether to continue downloading the rest.
     installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
     result = IsInstalled(workflowData);
@@ -350,6 +366,15 @@ ADUC_Result ScriptHandlerImpl::PrepareScriptArguments(
 
     filePath << workFolder.c_str() << "/" << scriptFileName;
     scriptFilePath = filePath.str();
+    Log_Debug("Attempting to execute script at: %s", scriptFilePath.c_str());
+
+    // Add file existence check
+    if (access(scriptFilePath.c_str(), X_OK) != 0) {
+        Log_Error("Script file not found or not executable at: %s (errno: %d)", scriptFilePath.c_str(), errno);
+        result.ResultCode = ADUC_Result_Failure;
+        result.ExtendedResultCode = ADUC_ERC_SCRIPT_HANDLER_MISSING_PRIMARY_SCRIPT_FILE;
+        goto done;
+    }
 
     //
     // Prepare script arguments.
@@ -819,5 +844,18 @@ ADUC_Result ScriptHandlerImpl::Restore(const tagADUC_WorkflowData* workflowData)
 
     ADUC_Result result = { ADUC_Result_Restore_Success_Unsupported };
     Log_Info("Script handler backup & restore is not supported. (no-op)");
+    return result;
+}
+
+static ADUC_Result EnsureScriptExecutable(const std::string& scriptPath)
+{
+    ADUC_Result result = {ADUC_Result_Success};
+    
+    if (chmod(scriptPath.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
+        Log_Error("Failed to set execute permissions on script: %s (errno: %d)", scriptPath.c_str(), errno);
+        result.ResultCode = ADUC_Result_Failure;
+        result.ExtendedResultCode = ADUC_ERC_SCRIPT_HANDLER_CREATE_SANDBOX_FAILURE;
+    }
+    
     return result;
 }
