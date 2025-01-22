@@ -52,6 +52,7 @@ steps:
           if [ "$BUILD_ARCH" = "arm32" ]; then
               BUILD_ARCH="armhf"
           fi
+          sudo docker exec -w /iot-hub-device-update ARMcontainer apt-get update
           sudo docker exec -w /iot-hub-device-update ARMcontainer ./scripts/install-deps.sh --install-all-deps
       displayName: "Install ADUC dependencies"
 
