@@ -161,11 +161,10 @@ do_install_aduc_packages() {
 
     $SUDO apt-get install --yes "${aduc_packages[@]}" || return
 
-    # The latest version of gcc available on Debian is gcc-6. We install that version if we are
-    # building for Debian, otherwise we install gcc-8 for Ubuntu.
+    # Install gcc-10 for Debian, gcc-8 for Ubuntu
     OS=$(lsb_release --short --id)
-    if [[ $OS == "debian" && $VER == "9" ]]; then
-        $SUDO apt-get install --yes gcc-6 g++-6 || return
+    if [[ $OS == "debian" ]]; then
+        $SUDO apt-get install --yes gcc-10 g++-10 || return
     else
         $SUDO apt-get install --yes gcc-8 g++-8 || return
     fi
