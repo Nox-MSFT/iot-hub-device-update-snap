@@ -52,7 +52,7 @@ steps:
           if [ "$BUILD_ARCH" = "arm32" ]; then
               BUILD_ARCH="armhf"
           fi
-          sudo docker exec -w /iot-hub-device-update ARMcontainer ./scripts/install-deps.sh --install-all-deps --arch $BUILD_ARCH
+          sudo docker exec -w /iot-hub-device-update ARMcontainer ./scripts/install-deps.sh --install-all-deps
       displayName: "Install ADUC dependencies"
 
     - bash: |
@@ -61,7 +61,7 @@ steps:
           if [ "$BUILD_ARCH" = "arm32" ]; then
               BUILD_ARCH="armhf"
           fi
-          sudo docker exec -w /iot-hub-device-update ARMcontainer scripts/build.sh --clean --build-unit-tests --type MinSizeRel --platform-layer linux --log-lib zlog --build-packages --arch $BUILD_ARCH --out-dir out-${{parameters.targetOs}}-${{parameters.targetArch}}
+          sudo docker exec -w /iot-hub-device-update ARMcontainer scripts/build.sh --clean --build-unit-tests --type MinSizeRel --platform-layer linux --log-lib zlog --build-packages --out-dir out-${{parameters.targetOs}}-${{parameters.targetArch}}
       displayName: "Build Client, Unit Tests and Packages: linux-MinSizeRel"
     - bash: |
           cp out-${{parameters.targetOs}}-${{parameters.targetArch}}/*.deb $(Build.ArtifactStagingDirectory)
