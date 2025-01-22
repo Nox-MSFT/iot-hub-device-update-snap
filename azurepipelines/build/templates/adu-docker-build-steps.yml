@@ -14,35 +14,54 @@ steps:
           sourceScanPath: src
 
     - task: Docker@2
-      displayName: Login to ACR
-      inputs:
-          command: login
-          containerRegistry: aduccontainerregistry
-          repository: ${{parameters.targetOs}}-${{parameters.targetArch}}
-
-    - task: Docker@2
-      displayName: Pull latest build image
+      displayName: Pull Debian base image
       inputs:
           command: pull
-          containerRegistry: aduccontainerregistry
-          arguments: "aduccontainerregistry.azurecr.io/${{parameters.targetOs}}-${{parameters.targetArch}}:latest"
+          arguments: "debian:bullseye"
 
     - bash: |
           echo "Running whoami"
           whoami
-          echo "Register QEMU"
+          echo "Register QEMU for multi-arch support"
           sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          # Map arm32 parameter to docker's armhf platform
+          DOCKER_ARCH=${{ parameters.targetArch }}
+          if [ "$DOCKER_ARCH" = "arm32" ]; then
+              DOCKER_ARCH="arm/v7"
+          fi
+          echo "Target architecture: $DOCKER_ARCH"
           echo "Listing running containers"
           sudo docker ps -a
           echo "Listing current images"
           sudo docker images
       displayName: "Prebuild"
       condition: always()
+
     - bash: |
-          sudo docker run -d -t --rm -v $(Build.SourcesDirectory):/iot-hub-device-update -v ~/.gitconfig:/etc/.gitconfig --name ARMcontainer aduccontainerregistry.azurecr.io/${{parameters.targetOs}}-${{parameters.targetArch}}:latest bash
+          # Map arm32 parameter to docker's armhf platform
+          DOCKER_ARCH=${{ parameters.targetArch }}
+          if [ "$DOCKER_ARCH" = "arm32" ]; then
+              DOCKER_ARCH="arm/v7"
+          fi
+          sudo docker run -d -t --rm --platform linux/$DOCKER_ARCH -v $(Build.SourcesDirectory):/iot-hub-device-update -v ~/.gitconfig:/etc/.gitconfig --name ARMcontainer debian:bullseye bash
       displayName: "Run docker container"
+
     - bash: |
-          sudo docker exec -w /iot-hub-device-update ARMcontainer scripts/build.sh --clean --build-unit-tests --type MinSizeRel --platform-layer linux --log-lib zlog --build-packages --out-dir out-${{parameters.targetOs}}-${{parameters.targetArch}}
+          # Map arm32 to debian's armhf for package installation
+          BUILD_ARCH=${{ parameters.targetArch }}
+          if [ "$BUILD_ARCH" = "arm32" ]; then
+              BUILD_ARCH="armhf"
+          fi
+          sudo docker exec -w /iot-hub-device-update ARMcontainer ./scripts/install-deps.sh --install-all-deps --arch $BUILD_ARCH
+      displayName: "Install ADUC dependencies"
+
+    - bash: |
+          # Map arm32 to debian's armhf for building
+          BUILD_ARCH=${{ parameters.targetArch }}
+          if [ "$BUILD_ARCH" = "arm32" ]; then
+              BUILD_ARCH="armhf"
+          fi
+          sudo docker exec -w /iot-hub-device-update ARMcontainer scripts/build.sh --clean --build-unit-tests --type MinSizeRel --platform-layer linux --log-lib zlog --build-packages --arch $BUILD_ARCH --out-dir out-${{parameters.targetOs}}-${{parameters.targetArch}}
       displayName: "Build Client, Unit Tests and Packages: linux-MinSizeRel"
     - bash: |
           cp out-${{parameters.targetOs}}-${{parameters.targetArch}}/*.deb $(Build.ArtifactStagingDirectory)
