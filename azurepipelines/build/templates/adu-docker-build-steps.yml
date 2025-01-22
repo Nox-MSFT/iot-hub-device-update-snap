@@ -17,7 +17,7 @@ steps:
       displayName: Pull Debian base image
       inputs:
           command: pull
-          arguments: "debian:bullseye"
+          arguments: "debian:buster"
 
     - bash: |
           echo "Running whoami"
