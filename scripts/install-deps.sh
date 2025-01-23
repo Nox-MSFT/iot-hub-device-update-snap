@@ -895,7 +895,6 @@ if [[ $install_all_deps == "true" ]]; then
     install_do=true
     install_cmake=true
     install_shellcheck=true
-    install_githooks=true
 fi
 
 # Set implied options for aduc deps.
