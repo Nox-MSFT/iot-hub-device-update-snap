@@ -178,7 +178,8 @@ do_install_aduc_packages() {
         $SUDO apt-get install --yes gcc-6 g++-6 || return
         catch2_cc=/usr/bin/gcc-6
         catch2_cxx=/usr/bin/g++-6
-    elif [[ ($OS == "Debian" && $VER == "11") || (\
+    elif [[ ($OS == "Debian" && $VER == "10") || (\
+        $OS == "Debian" && $VER == "11") || (\
         $OS == "Ubuntu" && $VER == "20.04") || (\
         $OS == "Ubuntu" && $VER == "22.04") ]] \
             ; then
@@ -891,7 +892,7 @@ if [[ $install_all_deps == "true" ]]; then
     install_do=true
     install_cmake=true
     install_shellcheck=true
-    install_githooks=true
+    #install_githooks=true
 fi
 
 # Set implied options for aduc deps.

@@ -17,18 +17,10 @@ steps:
           sourceScanPath: src
 
     - task: Docker@2
-      displayName: Login to ACR
-      inputs:
-          command: login
-          containerRegistry: aduccontainerregistry
-          repository: ${{parameters.targetOs}}-${{parameters.targetArch}}
-
-    - task: Docker@2
-      displayName: Pull latest build image
+      displayName: Pull Debian 10 image
       inputs:
           command: pull
-          containerRegistry: aduccontainerregistry
-          arguments: "aduccontainerregistry.azurecr.io/${{parameters.targetOs}}-${{parameters.targetArch}}:latest"
+          arguments: "--platform linux/${{parameters.targetArch}} debian:buster"
 
     - bash: |
           echo "Running whoami"
@@ -42,9 +34,11 @@ steps:
       displayName: "Prebuild"
       condition: always()
     - bash: |
-          sudo docker run -d -t --rm -v $(Build.SourcesDirectory):/iot-hub-device-update -v ~/.gitconfig:/etc/.gitconfig --name ARMcontainer aduccontainerregistry.azurecr.io/${{parameters.targetOs}}-${{parameters.targetArch}}:latest bash
+          sudo docker run -d -t --rm --platform linux/${{parameters.targetArch}} -v $(Build.SourcesDirectory):/iot-hub-device-update -v ~/.gitconfig:/etc/.gitconfig --name ARMcontainer debian:buster bash
       displayName: "Run docker container"
     - bash: |
+          sudo docker exec -w /iot-hub-device-update ARMcontainer apt-get update
+          sudo docker exec -w /iot-hub-device-update ARMcontainer ./scripts/install-deps.sh --install-all-deps
           if [ -n "${{parameters.patchVersion}}" ]; then
             sudo docker exec -w /iot-hub-device-update ARMcontainer scripts/build.sh --clean --build-unit-tests --type MinSizeRel --platform-layer linux --log-lib zlog --build-packages --patch-version ${{parameters.patchVersion}} --out-dir out-${{parameters.targetOs}}-${{parameters.targetArch}}
           else

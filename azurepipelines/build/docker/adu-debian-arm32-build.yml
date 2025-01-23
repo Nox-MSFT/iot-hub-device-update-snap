@@ -94,7 +94,7 @@ extends:
               - template: /azurepipelines/build/templates/adu-docker-build-steps.yml@self
                 parameters:
                   targetOs: "debian11"
-                  targetArch: "arm32"
+                  targetArch: "arm/v7"
 
           - job: BuildAduAgent_debian10
             displayName: "Build ADU Agent - Debian 10 (arm32)"
@@ -107,4 +107,4 @@ extends:
               - template: /azurepipelines/build/templates/adu-docker-build-steps.yml@self
                 parameters:
                   targetOs: "debian10"
-                  targetArch: "arm32"
+                  targetArch: "arm/v7"
