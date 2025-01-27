@@ -34,7 +34,7 @@ steps:
       displayName: "Prebuild"
       condition: always()
     - bash: |
-          sudo docker run -d -t --rm --platform linux/${{parameters.targetArch}} -v $(Build.SourcesDirectory):/iot-hub-device-update -v ~/.gitconfig:/etc/.gitconfig --name ARMcontainer debian:buster bash
+          sudo docker run -d -t --rm --platform linux/${{parameters.targetArch}} -v $(Build.SourcesDirectory):/iot-hub-device-update -v ~/.gitconfig:/etc/.gitconfig -v /tmp:/tmp --name ARMcontainer debian:buster bash
       displayName: "Run docker container"
     - bash: |
           sudo docker exec -w /iot-hub-device-update ARMcontainer apt-get update
