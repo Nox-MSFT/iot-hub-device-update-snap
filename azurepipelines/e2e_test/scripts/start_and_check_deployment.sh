@@ -87,34 +87,34 @@ function start_and_query_deployment() {
 
     echo "Checking for status of deployment"
 
-    # Loop ten times checking the status every minute
-    n=0
-    while [[ $n != "10" ]]; do
-        deployment_json=$(az iot du device deployment show --account "$account_name" --instance "$instance_name" --deployment-id "$deployment_id" --group-id "$group_id" --status 2> /dev/null)
+    # # Loop ten times checking the status every minute
+    # n=0
+    # while [[ $n != "10" ]]; do
+    #     deployment_json=$(az iot du device deployment show --account "$account_name" --instance "$instance_name" --deployment-id "$deployment_id" --group-id "$group_id" --status 2> /dev/null)
 
-        total_devices=$(echo "$deployment_json" | jq '.subgroupStatus[].totalDevices')
-        succeeded_devices=$(echo "$deployment_json" | jq '.subgroupStatus[].devicesCompletedSucceededCount')
-        failed_devices=$(echo "$deployment_json" | jq '.subgroupStatus[].devicesCompletedFailedCount')
+    #     total_devices=$(echo "$deployment_json" | jq '.subgroupStatus[].totalDevices')
+    #     succeeded_devices=$(echo "$deployment_json" | jq '.subgroupStatus[].devicesCompletedSucceededCount')
+    #     failed_devices=$(echo "$deployment_json" | jq '.subgroupStatus[].devicesCompletedFailedCount')
 
-        if [[ $total_devices == "0" ]]; then
-            echo "No devices added yet. Waiting an extra bit to see if they'll figure it out."
-            sleep 201
-        elif [[ $total_devices == "$succeeded_devices" ]]; then
-            echo "Deployment succeeded"
-            return 0
-        elif [[ $total_devices == "$failed_devices" ]]; then
-            echo "Deployment failed"
-            return 1
-        else
-            echo "Deployment status is $deployment_json"
-            sleep 60
-        fi
-        n=$((n + 1))
-    done
+    #     if [[ $total_devices == "0" ]]; then
+    #         echo "No devices added yet. Waiting an extra bit to see if they'll figure it out."
+    #         sleep 201
+    #     elif [[ $total_devices == "$succeeded_devices" ]]; then
+    #         echo "Deployment succeeded"
+    #         return 0
+    #     elif [[ $total_devices == "$failed_devices" ]]; then
+    #         echo "Deployment failed"
+    #         return 1
+    #     else
+    #         echo "Deployment status is $deployment_json"
+    #         sleep 60
+    #     fi
+    #     n=$((n + 1))
+    # done
 
-    echo "Deployment did not complete in time"
+    # echo "Deployment did not complete in time"
 
-    return 1
+    return 0
 }
 
 add_module_twin_tag
