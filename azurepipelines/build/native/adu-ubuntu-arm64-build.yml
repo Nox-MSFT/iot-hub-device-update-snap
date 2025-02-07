@@ -21,7 +21,7 @@ variables:
     CC: gcc-8
     CXX: g++-8
 
-name: $(version.major).$(version.minor).$(version.patch)-$(version.pre-release)+$(version.build)
+name: $(version.major).$(version.minor).$(version.patch)-$(version.pre-release)
 
 trigger:
     branches:
@@ -68,7 +68,7 @@ extends:
   template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
     pool:
-      name: aduc_1es_client_pool
+      name: ubuntu2004_arm_pool
       os: linux
 
     sdl:
@@ -88,7 +88,7 @@ extends:
             timeoutInMinutes: 120
             cancelTimeoutInMinutes: 120
             pool:
-              name: aduc_1es_client_pool
+              name: ubuntu2004_arm_pool
               os: linux
             steps:
               - template: /azurepipelines/build/templates/adu-native-build-steps.yml@self
