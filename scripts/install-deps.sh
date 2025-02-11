@@ -171,26 +171,9 @@ do_install_aduc_packages() {
 
     $SUDO apt-get install --yes "${aduc_packages[@]}" || return
 
-    # The latest version of gcc available on Debian is gcc-6. We install that version if we are
-    # building for Debian, otherwise we install gcc-8 for Ubuntu.
-    OS=$(lsb_release --short --id)
-    if [[ $OS == "Debian" && $VER == "9" ]]; then
-        $SUDO apt-get install --yes gcc-6 g++-6 || return
-        catch2_cc=/usr/bin/gcc-6
-        catch2_cxx=/usr/bin/g++-6
-    elif [[ ($OS == "Debian" && $VER == "10") || (\
-        $OS == "Debian" && $VER == "11") || (\
-        $OS == "Ubuntu" && $VER == "20.04") || (\
-        $OS == "Ubuntu" && $VER == "22.04") ]] \
-            ; then
-        $SUDO apt-get install --yes gcc-10 g++-10 || return
-        catch2_cc=/usr/bin/gcc-10
-        catch2_cxx=/usr/bin/g++-10
-    else
-        $SUDO apt-get install --yes gcc-8 g++-8 || return
-        catch2_cc=/usr/bin/gcc-8
-        catch2_cxx=/usr/bin/g++-8
-    fi
+    $SUDO apt-get install --yes gcc g++ || return
+    catch2_cc=/usr/bin/gcc
+    catch2_cxx=/usr/bin/g++
 
     echo "Installing packages required for static analysis..."
 
