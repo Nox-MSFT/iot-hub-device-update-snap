@@ -45,20 +45,16 @@ steps:
         debian:buster \
         bash
 
-    # Update apt and install dependencies, then build in a single script block
-    sudo docker exec ARMcontainer bash -c "
-      set -e
-      cd /iot-hub-device-update
-      apt-get update
-
-      echo 'Installing dependencies and CMake...'
-      ./scripts/install-deps.sh --install-all-deps --install-cmake
-
-      echo 'Running build script...'
-      ./scripts/build.sh --clean --build-unit-tests --type MinSizeRel \
-                         --platform-layer linux --log-lib zlog --build-packages \
-                         --out-dir out-\${{ parameters.targetOs }}-\${{ parameters.targetArch }}
-    "
+      sudo docker exec ARMcontainer bash -c '\
+        set -e; \
+        cd /iot-hub-device-update; \
+        apt-get update; \
+        echo "Installing dependencies and CMake..."; \
+        ./scripts/install-deps.sh --install-all-deps --install-cmake; \
+        echo "Running build script..."; \
+        ./scripts/build.sh --clean --build-unit-tests --type MinSizeRel \
+          --platform-layer linux --log-lib zlog --build-packages \
+          --out-dir out-${{ parameters.targetOs }}-${{ parameters.targetArch }}'
     displayName: "Build Client, Unit Tests and Packages: linux-MinSizeRel"
 
   - bash: |
