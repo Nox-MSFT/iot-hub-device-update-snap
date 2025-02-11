@@ -16,11 +16,16 @@ steps:
     inputs:
       sourceScanPath: src
 
+  - bash: |
+      DEBIAN_VERSION=$(echo "${{ parameters.targetOs }}" | sed 's/debian//')
+      echo "##vso[task.setvariable variable=DEBIAN_VERSION]$DEBIAN_VERSION"
+    displayName: Set Debian version
+
   - task: Docker@2
-    displayName: Pull Debian 10 image
+    displayName: Pull Debian image
     inputs:
       command: pull
-      arguments: "--platform linux/${{ parameters.targetArch }} debian:buster"
+      arguments: --platform linux/${{ parameters.targetArch }} debian:$(DEBIAN_VERSION)
 
   - bash: |
       echo "Running whoami"
@@ -42,7 +47,7 @@ steps:
         -v $(Build.SourcesDirectory):/iot-hub-device-update \
         -v ~/.gitconfig:/etc/.gitconfig \
         --name ARMcontainer \
-        debian:buster \
+        debian:$(DEBIAN_VERSION) \
         bash
 
       sudo docker exec ARMcontainer bash -c '\

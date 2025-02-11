@@ -171,9 +171,19 @@ do_install_aduc_packages() {
 
     $SUDO apt-get install --yes "${aduc_packages[@]}" || return
 
-    $SUDO apt-get install --yes gcc g++ || return
-    catch2_cc=/usr/bin/gcc
-    catch2_cxx=/usr/bin/g++
+    # Convert OS to lowercase for comparison and normalize VER
+    local os_lower="${OS,,}"
+    if [[ ($os_lower == "debian" && $VER == "11") || \
+        ($os_lower == "ubuntu" && $VER == "20.04") || \
+        ($os_lower == "ubuntu" && $VER == "22.04") ]]; then
+        $SUDO apt-get install --yes gcc-10 g++-10 || return
+        catch2_cc=/usr/bin/gcc-10
+        catch2_cxx=/usr/bin/g++-10
+    else
+        $SUDO apt-get install --yes gcc-8 g++-8 || return
+        catch2_cc=/usr/bin/gcc-8
+        catch2_cxx=/usr/bin/g++-8
+    fi
 
     echo "Installing packages required for static analysis..."
 
