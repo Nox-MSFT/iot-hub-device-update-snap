@@ -22,8 +22,6 @@ target_link_libraries (
 target_compile_definitions (
     ${target_name}
     PRIVATE ADUC_BUILD_SNAP="${ADUC_BUILD_SNAP}"
-            EIS_DATA_PATH="${EIS_DATA_PATH}"
-            EIS_USER="${EIS_USER}"
 )
 
 if (ADUC_BUILD_UNIT_TESTS)
