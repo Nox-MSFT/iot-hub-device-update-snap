@@ -28,7 +28,7 @@ if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
         link_directories(/usr/lib/x86_64-linux-gnu)
 
         # Set the LINK_DIRECTORIES property to exclude /usr/local/lib/deviceupdate-openssl/lib
-        set_target_properties(AducIotAgent PROPERTIES LINK_DIRECTORIES "/usr/lib/x86_64-linux-gnu")
+        set_target_properties(${target_name} PROPERTIES LINK_DIRECTORIES "/usr/lib/x86_64-linux-gnu")
     endif()
 endif()
 
