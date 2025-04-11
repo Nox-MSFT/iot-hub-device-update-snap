@@ -17,7 +17,7 @@ description: |
       deviceupdate-agent.set-config --help
 
 
-grade: devel
+grade: stable
 confinement: strict
 
 # Use passthrough for the moment, until the appropriate snapcraft release lands
